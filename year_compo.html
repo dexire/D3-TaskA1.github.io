@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+<h1>Energy Consumption Trend Over Years and Population Change</h1>
+<body>
+How this each country or the world cope with the energy demands of its populace over time?<br>
+This chart allows users the explore the trends of energy consumption for each country (or the world).<br>
+Users are able to select a country to examine, and mouse over trace lines that connects energy consumption 
+with the year and respective population.
+</body>
+<br><br><br>
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+<div id="dataviz_builtWithD3"></div>
+<script>
+    var country = "World";
+    var dropDownOptions = ['World', 'Afghanistan', 'Albania', 'Algeria' ,'American Samoa', 'Angola',
+                            'Antarctica' ,'Antigua and Barbuda', 'Argentina' ,'Armenia', 'Aruba',
+                            'Australia' ,'Austria', 'Azerbaijan', 'Bahrain', 'Bangladesh', 'Barbados',
+                            'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia',
+                            'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'British Virgin Islands',
+                            'Brunei' ,'Bulgaria', 'Burkina Faso', 'Burma' ,'Burundi' ,'Cabo Verde',
+                            'Cambodia', 'Cameroon' ,'Canada', 'Cayman Islands',
+                            'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia' ,'Comoros',
+                            'Congo-Brazzaville', 'Congo-Kinshasa', 'Cook Islands' ,'Costa Rica',
+                            'Croatia', 'Cuba', 'Cyprus' ,'Czech Republic', 'Côte d’Ivoire', 'Denmark',
+                            'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador' ,'Egypt',
+                            'El Salvador,' ,'Equatorial Guinea' ,'Eritrea', 'Estonia' ,'Eswatini',
+                            'Ethiopia', 'Falkland Islands' ,'Faroe Islands' ,'Fiji', 'Finland',
+                            'Former Czechoslovakia' ,'Former Serbia and Montenegro', 'Former U.S.S.R.',
+                            'Former Yugoslavia' ,'France' ,'French Guiana', 'French Polynesia', 'Gabon',
+                            'Gambia, The' ,'Georgia', 'Germany' ,'Germany, East', 'Germany, West', 'Ghana',
+                            'Gibraltar', 'Greece' ,'Greenland', 'Grenada', 'Guadeloupe' ,'Guam',
+                            'Guatemala', 'Guinea' ,'Guinea-Bissau' ,'Guyana', 'Haiti',
+                            'Hawaiian Trade Zone' ,'Honduras' ,'Hong Kong', 'Hungary', 'Iceland' ,'India',
+                            'Indonesia', 'Iran' ,'Iraq', 'Ireland' ,'Israel' ,'Italy', 'Jamaica', 'Japan',
+                            'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Kosovo', 'Kuwait', 'Kyrgyzstan',
+                            'Laos' ,'Latvia' ,'Lebanon' ,'Lesotho', 'Liberia', 'Libya' ,'Lithuania',
+                            'Luxembourg' ,'Macau' ,'Madagascar' ,'Malawi' ,'Malaysia', 'Maldives', 'Mali',
+                            'Malta', 'Martinique', 'Mauritania' ,'Mauritius' ,'Mexico', 'Micronesia',
+                            'Moldova' ,'Mongolia' ,'Montenegro' ,'Montserrat', 'Morocco', 'Mozambique',
+                            'Namibia', 'Nauru', 'Nepal' ,'Netherlands', 'Netherlands Antilles',
+                            'New Caledonia' ,'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue',
+                            'North Korea', 'North Macedonia' ,'Northern Mariana Islands', 'Norway',
+                            'Oman', 'Pakistan', 'Palestinian Territories', 'Panama', 'Papua New Guinea',
+                            'Paraguay', 'Peru' ,'Philippines', 'Poland' ,'Portugal' ,'Puerto Rico', 'Qatar',
+                            'Reunion' ,'Romania', 'Russia' ,'Rwanda' ,'Saint Helena',
+                            'Saint Kitts and Nevis' ,'Saint Lucia', 'Saint Pierre and Miquelon',
+                            'Saint Vincent/Grenadines', 'Samoa', 'Sao Tome and Principe', 'Saudi Arabia',
+                            'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone' ,'Singapore', 'Slovakia',
+                            'Slovenia' ,'Solomon Islands' ,'Somalia', 'South Africa', 'South Korea',
+                            'South Sudan' ,'Spain' ,'Sri Lanka' ,'Sudan' ,'Suriname', 'Sweden',
+                            'Switzerland', 'Syria', 'Taiwan' ,'Tajikistan', 'Tanzania' ,'Thailand',
+                            'The Bahamas' ,'Timor-Leste', 'Togo', 'Tonga', 'Trinidad and Tobago',
+                            'Tunisia' ,'Turkey' ,'Turkmenistan' ,'Turks and Caicos Islands', 'Tuvalu',
+                            'U.S. Pacific Islands', 'U.S. Territories' ,'U.S. Virgin Islands', 'Uganda',
+                            'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States',
+                            'Uruguay', 'Uzbekistan', 'Vanuatu' ,'Venezuela', 'Vietnam' ,'Wake Island',
+                            'Western Sahara', 'Yemen' ,'Zambia' ,'Zimbabwe']
+    var dropdownButton = d3.select("#dataviz_builtWithD3").append('select');
+    dropdownButton // Add a button
+        .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
+        .data(dropDownOptions)
+        .enter()
+        .append('option')
+        .text(function (d) { return d; }) // text showed in the menu
+        .attr("value", function (d) { return d; }) // corresponding value returned by the button
+        
+    
+    
+    // set the dimensions and margins of the graph
+    var margin = {top: 30, right: 10, bottom: 10, left: 0},
+      width = 500 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
+    
+    var Tooltip = d3.select("#my_dataviz")
+      .append("div")
+      .style("opacity", 0)
+      .attr("class", "tooltip")
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "5px")
+      .style("padding", "5px")
+
+    // append the svg object to the body of the page
+    var svg = d3.select("#my_dataviz")
+    .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    // Highlight the specie that is hovered
+    var highlight = function(d){
+
+      // first every group turns grey
+      d3.selectAll(".line")
+        .transition().duration(200)
+        .style("stroke", "lightgrey")
+        .style("stroke-width", "1px")
+        .style("opacity", "0.4")
+      // Second the hovered specie takes its color
+      d3.select(this)
+        .transition().duration(200)
+        .style("stroke", "#3C33FF")
+        .style("stroke-width", "5px")
+        .style("opacity", "1")
+      Tooltip.style("opacity", 1)
+      }
+
+      // Unhighlight
+    var doNotHighlight = function(d){
+      d3.selectAll(".line")
+        .transition().duration(200).delay(1000)
+        .style("stroke", "#3C33FF" )
+        .style("opacity", "1")
+        .style("stroke-width", "1px")
+      Tooltip.style("opacity",0)
+      }
+
+    var mousemove = function(d){
+      var format = d3.format("3.2s")
+      Tooltip
+        .html("Year: " + d.Year + 
+        " Population: " + format(d.population) + 
+        " Coal: "+ format(d.coal) + 
+        " Natural gas: " + format(d.natural_gas) +
+        " Petroleum: " + format(d.petroleum) +
+        " Nuclear: " + format(d.nuclear) +
+        " Renewables: " + format(d.renewables))
+        .style("left", (d3.mouse(this)[0]+70) + "px")
+        .style("top", (d3.mouse(this)[1]) + "px")
+    }
+    
+    
+    // Parse the Data
+    d3.csv("Parallel_data.csv", function(data) {
+        
+      filtered_data = data.filter(function(d){return (d.Country == country)})
+      // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
+      dimensions = d3.keys(data[0]).filter(function(d) { return d != "Country" })
+      // For each dimension, I build a linear scale. I store all in a y object
+      var y = {}
+      for (i in dimensions) {
+        name = dimensions[i]
+        y[name] = d3.scaleLinear()
+            .domain( d3.extent(filtered_data, function(d) { return +d[name]; }) )
+          .range([height, 0])
+      }
+    
+      // Build the X scale -> it find the best position for each Y axis
+      x = d3.scalePoint()
+        .range([0, width])
+        .padding(1)
+        .domain(dimensions);
+    
+      // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
+      function path(d) {
+          ///console.log(d)
+          //d is a row
+          return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
+      }
+    
+      // Draw the lines
+      svg
+        .selectAll("myPath")
+        .data(filtered_data)
+        .enter().append("path")
+        .attr("d",  path)
+        .style("fill", "none")
+        .style("stroke", "#3C33FF")
+        .style("stroke-width", "1px")
+        .style("opacity", 1)
+        .attr("class", "line")
+        .on("mouseover", highlight)
+        .on("mouseleave", doNotHighlight )
+        .on("mousemove", mousemove)
+    
+      // Draw the axis:
+      svg.selectAll("myAxis")
+        // For each dimension of the dataset I add a 'g' element:
+        .data(dimensions).enter()
+        .append("g")
+        // I translate this element to its right position on the x axis
+        .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
+        // And I build the axis with the call function
+        .each(function(d) { d3.select(this).call(d3.axisLeft().scale(y[d])); })
+        // Add axis title
+        .append("text")
+          .style("text-anchor", "middle")
+          .attr("y", -9)
+          .text(function(d) { return d; })
+          .style("fill", "black")
+    
+    })
+    
+    function updateChart()
+    {
+        d3.csv("Parallel_data.csv", function(data) {
+        
+            filtered_data = data.filter(function(d){return (d.Country == country)});
+            svg.selectAll("*").remove();
+            var y = {}
+            for (i in dimensions) {
+                name = dimensions[i]
+                y[name] = d3.scaleLinear()
+                    .domain( d3.extent(filtered_data, function(d) { return +d[name]; }) )
+                .range([height, 0])
+            }
+            
+            // Build the X scale -> it find the best position for each Y axis
+            x = d3.scalePoint()
+                .range([0, width])
+                .padding(1)
+                .domain(dimensions);
+
+            function path(d) {
+                ///console.log(d)
+                //d is a row
+                return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
+            }
+
+            svg
+            .selectAll("myPath")
+            .data(filtered_data)
+            .enter().append("path")
+            .attr("d",  path)
+            .style("fill", "none")
+            .style("stroke", "#3C33FF")
+            .style("stroke-width", "1px")
+            .style("opacity", 1)
+            .attr("class", "line")
+            .on("mouseover", highlight)
+            .on("mouseleave", doNotHighlight )
+            .on("mousemove", mousemove)
+    
+            // Draw the axis:
+            svg.selectAll("myAxis")
+            // For each dimension of the dataset I add a 'g' element:
+            .data(dimensions).enter()
+            .append("g")
+            // I translate this element to its right position on the x axis
+            .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
+            // And I build the axis with the call function
+            .each(function(d) { d3.select(this).call(d3.axisLeft().scale(y[d])); })
+            // Add axis title
+            .append("text")
+            .style("text-anchor", "middle")
+            .attr("y", -9)
+            .text(function(d) { return d; })
+            .style("fill", "black")
+        })
+    }
+    dropdownButton.on("change", function(d){
+            country = d3.select(this).property("value");
+            updateChart();
+        })
+    
+</script>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<h1>Energy Creation Leaders</h1>
+<body>
+Which countries are the greatest producers of each type of energy? <br>
+Users can choose the year and the type of energy produced.<br>
+The top 9 countries and the world total of energy produced are displayed.
+</body>
+<br><br><br>
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+<div id="dataviz_builtWithD3"></div>
+<input type="number" id="year" value=2000>
+<script>
+
+    var energy = "Coal";
+    var year = 2000;
+    // set the dimensions and margins of the graph
+    var margin = {top: 30, right: 30, bottom: 70, left: 60},
+        width = 460 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+    
+    // append the svg object to the body of the page
+    var svg = d3.select("#my_dataviz")
+      .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+
+    var dropDownOptions = ["Coal", "Natural_Gas", "Petroleum", "Nuclear", "Renewables"]
+    var dropdownButton = d3.select("#dataviz_builtWithD3").append('select');
+    dropdownButton // Add a button
+        .selectAll('myOptions') // Next 4 lines add 6 options = 6 colors
+        .data(dropDownOptions)
+        .enter()
+        .append('option')
+        .text(function (d) { return d; }) // text showed in the menu
+        .attr("value", function (d) { return d; }) // corresponding value returned by the button
+
+    var sort_data = function(d) {
+        var result_data;
+      result_data = d.sort(function(b,a) {return a[energy] - b[energy];})
+      return result_data.slice(0,11);
+    }
+
+    
+    
+    // Parse the Data
+    d3.csv("production_data.csv", function(data) {
+      //filter by year
+      filtered_data = data.filter(function(d){return (d.Year == year)});
+      //sort data
+      sorted_data = sort_data(filtered_data)
+    
+      // Add X axis
+    var x = d3.scaleLinear()
+        .domain([0, d3.max(sorted_data, function(d) {return +d[energy];})])
+        .range([ 0, width]);
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end");
+
+    // Y axis
+    var y = d3.scaleBand()
+        .range([ 0, height ])
+        .domain(sorted_data.map(function(d) { return d.Country; }))
+        .padding(.1);
+    svg.append("g")
+        .call(d3.axisLeft(y))
+
+    //Bars
+    svg.selectAll("myRect")
+        .data(sorted_data)
+        .enter()
+        .append("rect")
+        .attr("x", x(0) )
+        .attr("y", function(d) { return y(d.Country); })
+        .attr("width", function(d){return x(d[energy])})
+        .attr("height", y.bandwidth() )
+        .attr("fill", "#69b3a2")
+    
+    })
+
+    function updateChart()
+    {
+    d3.csv("production_data.csv", function(data) {
+      //filter by year
+      filtered_data = data.filter(function(d){return (d.Year == year)});
+      //sort data
+      sorted_data = sort_data(filtered_data)
+      svg.selectAll("*").remove();
+      console.log(sorted_data)
+      console.log(d3.max(sorted_data, function(d) {return +d[energy];}))
+        // Add X axis
+        var x = d3.scaleLinear()
+            .domain([0, d3.max(sorted_data, function(d) {return +d[energy];})])
+            .range([ 0, width]);
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x))
+            .selectAll("text")
+            .attr("transform", "translate(-10,0)rotate(-45)")
+            .style("text-anchor", "end");
+
+        // Y axis
+        var y = d3.scaleBand()
+            .range([ 0, height ])
+            .domain(sorted_data.map(function(d) { return d.Country; }))
+            .padding(.1);
+        svg.append("g")
+            .call(d3.axisLeft(y))
+
+        //Bars
+        svg.selectAll("myRect")
+            .data(sorted_data)
+            .enter()
+            .append("rect")
+            .attr("x", x(0))
+            .attr("y", function(d) { return y(d.Country); })
+            .attr("width", function(d){return x(d[energy])})
+            .attr("height", y.bandwidth() )
+            .attr("fill", "#69b3a2")
+        
+        })
+    }
+    // A function that update the color circle
+    function changeyear() {
+        year = this.value;
+        updateChart();
+    }
+
+    // Add an event listener to the button created in the html part
+    d3.select("#year").on("input", changeyear )
+    dropdownButton.on("change", function(d){
+        energy = d3.select(this).property("value");
+            updateChart();
+        })
+    </script>

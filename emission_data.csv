@@ -1,0 +1,51 @@
+Country,Type,Value
+United States,Coal,72341.836927
+United States,Natural_gas,47142.141981
+United States,Petroleum,92119.88707
+United States,Nuclear,0.0
+United States,Renewables,0.0
+China,Coal,165340.95790788505
+China,Natural_gas,4837.712586458
+China,Petroleum,27599.88896762128
+China,Nuclear,0.0
+China,Renewables,0.0
+Former U.S.S.R.,Coal,17192.111454926293
+Former U.S.S.R.,Natural_gas,13083.310709187
+Former U.S.S.R.,Petroleum,15235.36058
+Former U.S.S.R.,Nuclear,0.0
+Former U.S.S.R.,Renewables,0.0
+Russia,Coal,12881.435281883452
+Russia,Natural_gas,21744.053407974
+Russia,Petroleum,10639.778346563558
+Russia,Nuclear,0.0
+Russia,Renewables,0.0
+Japan,Coal,13895.488035621795
+Japan,Natural_gas,6172.0267876729995
+Japan,Petroleum,24172.65944833425
+Japan,Nuclear,0.0
+Japan,Renewables,0.0
+India,Coal,26648.313761157144
+India,Natural_gas,2131.399477639
+India,Petroleum,11125.60622732434
+India,Nuclear,0.0
+India,Renewables,0.0
+Germany,Coal,9724.793875246516
+Germany,Natural_gas,4563.622809763
+Germany,Petroleum,9757.076031000002
+Germany,Nuclear,0.0
+Germany,Renewables,0.0
+United Kingdom,Coal,6925.073020172447
+United Kingdom,Natural_gas,5830.685676287
+United Kingdom,Petroleum,8870.624923204254
+United Kingdom,Nuclear,0.0
+United Kingdom,Renewables,0.0
+Canada,Coal,3689.9487564832734
+Canada,Natural_gas,6265.0997552379995
+Canada,Petroleum,9670.209179856445
+Canada,Nuclear,0.0
+Canada,Renewables,0.0
+South Korea,Coal,7046.911922451342
+South Korea,Natural_gas,1712.7474996360004
+South Korea,Petroleum,7682.135050275796
+South Korea,Nuclear,0.0
+South Korea,Renewables,0.0
