@@ -8,7 +8,8 @@
 How this each country or the world cope with the energy demands of its populace over time?<br>
 This chart allows users the explore the trends of energy consumption for each country (or the world).<br>
 Users are able to select a country to examine, and mouse over trace lines that connects energy consumption 
-with the year and respective population.
+with the year and respective population.<br>
+Energy usage is measured in quad Btu.
 </body>
 <br><br><br>
 <!-- Create a div where the graph will take place -->
@@ -123,10 +124,10 @@ with the year and respective population.
       }
 
     var mousemove = function(d){
-      var format = d3.format("3.2s")
+      var format = d3.format("3.2")
       Tooltip
         .html("Year: " + d.Year + 
-        " Population: " + format(d.population) + 
+        " Population: " + format(d.population / 1000) + " million" +
         " Coal: "+ format(d.coal) + 
         " Natural gas: " + format(d.natural_gas) +
         " Petroleum: " + format(d.petroleum) +
