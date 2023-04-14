@@ -80,7 +80,7 @@
             }
             var mousemove = function(d) {
                 tooltip
-                .html( format(d.Value))
+                .html( format(d.Value) + " MMtonnes CO2")
                 .style("left", (d3.mouse(this)[0]+70) + "px")
                 .style("top", (d3.mouse(this)[1]) + "px")
             }
