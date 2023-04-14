@@ -17,11 +17,10 @@ The top 9 countries and the world total of energy produced are displayed.
 <div id="dataviz_builtWithD3"></div>
 <input type="number" id="year" value=2000>
 <script>
-
     var energy = "Coal";
     var year = 2000;
     // set the dimensions and margins of the graph
-    var margin = {top: 30, right: 30, bottom: 70, left: 60},
+    var margin = {top: 30, right: 30, bottom: 70, left: 100},
         width = 460 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
     
@@ -48,6 +47,31 @@ The top 9 countries and the world total of energy produced are displayed.
         var result_data;
       result_data = d.sort(function(b,a) {return a[energy] - b[energy];})
       return result_data.slice(0,11);
+    }
+
+    var format = d3.format("3.2s")
+    var tooltip = d3.select("#my_dataviz")
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px")
+
+    // Three function that change the tooltip when user hover / move / leave a cell
+    var mouseover = function(d) {
+        tooltip.style("opacity", 1)
+    }
+    var mousemove = function(d) {
+        tooltip
+        .html( format(d[energy]) + " quad Btu")
+        .style("left", (d3.mouse(this)[0]+70) + "px")
+        .style("top", (d3.mouse(this)[1]) + "px")
+    }
+    var mouseleave = function(d) {
+        tooltip.style("opacity", 0)
     }
 
     
@@ -77,6 +101,8 @@ The top 9 countries and the world total of energy produced are displayed.
         .padding(.1);
     svg.append("g")
         .call(d3.axisLeft(y))
+    
+    
 
     //Bars
     svg.selectAll("myRect")
@@ -88,6 +114,16 @@ The top 9 countries and the world total of energy produced are displayed.
         .attr("width", function(d){return x(d[energy])})
         .attr("height", y.bandwidth() )
         .attr("fill", "#69b3a2")
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave)
+
+    svg.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "end")
+        .attr("x", width)
+        .attr("y", height + 30)
+        .text("Total energy produced in quad Btu");
     
     })
 
@@ -130,6 +166,16 @@ The top 9 countries and the world total of energy produced are displayed.
             .attr("width", function(d){return x(d[energy])})
             .attr("height", y.bandwidth() )
             .attr("fill", "#69b3a2")
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave)
+
+        svg.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "end")
+        .attr("x", width)
+        .attr("y", height + 30)
+        .text("Total energy produced in quad Btu");
         
         })
     }
